@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourcePackList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.GameType;
 import net.minecraft.world.ServerWorldEventHandler;
+import net.minecraft.world.Teleporter;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldServerMulti;
 import net.minecraft.world.WorldSettings;
@@ -15,7 +16,10 @@ import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraft.world.storage.WorldSavedDataStorage;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+
 import org.dimdev.rift.listener.DataPackFinderAdder;
+import org.dimdev.rift.listener.DimensionTypeAdder.TeleporterProvider;
 import org.dimdev.rift.listener.ServerTickable;
 import org.dimdev.riftloader.RiftLoader;
 
@@ -27,6 +31,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.Map;
 
 @Mixin(MinecraftServer.class)
@@ -67,6 +72,24 @@ public abstract class MixinMinecraftServer {
     		//Skip around existing types (the Overworld, Nether and End)
     		if (!worlds.containsKey(type)) {
     			WorldServerMulti world = new WorldServerMulti((MinecraftServer) (Object) this, saveHandler, type, overworld, profiler);
+    			if (type instanceof TeleporterProvider) {
+    				Teleporter teleporter = ((TeleporterProvider) type).makeTeleporter(world);
+
+    				if (teleporter != null) {//Protect nulling out the teleporter
+    					for (Field field : WorldServer.class.getDeclaredFields()) {
+    						if (field.getType() == Teleporter.class) {
+    							try {
+	    							field.setAccessible(true);
+	    							FieldUtils.removeFinalModifier(field, false);
+	    							field.set(world, teleporter);
+    							} catch (ReflectiveOperationException e) {
+    								throw new RuntimeException("Error setting teleporter", e);
+    							}
+    							break;
+    						}
+    					}
+    				}
+    			}
     			world.func_212251_i__();
 
     	        worlds.put(type, world);

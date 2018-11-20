@@ -16,6 +16,7 @@ public method bft <init> (Lbyt;Lbcr$c;)V # net.minecraft.block.BlockFlowingFluid
 
 public method boc <init> (ILjava/lang/String;Ljava/lang/String;Ljava/util/function/Supplier;)V # net.minecraft.world.dimension.DimensionType/<init>
 public method boc a (Ljava/lang/String;Lboc;)Lboc; # net.minecraft.world.dimension.DimensionType/register
+protected field ayj b Ltd; # net.minecraft.world.Teleporter/world
 
 public method ayt a (ILjava/lang/String;Layt;)V # net.minecraft.world.biome.Biome/register
 

@@ -102,7 +102,7 @@ public class TestMod implements BlockAdder, ItemAdder, FluidAdder, TextureAdder,
 
     @Override
     public void registerDimensionTypes() {
-    	TestDimension.giveType(DimensionTypeAdder.addDimensionType(555, new ResourceLocation("testmod", "test_dimension"), "_test", TestDimension::new));
+    	TestDimension.giveType(DimensionTypeAdder.addDimensionType(555, new ResourceLocation("testmod", "test_dimension"), "_test", TestDimension::new, TestTeleporter::new));
     }
 
     @Override
