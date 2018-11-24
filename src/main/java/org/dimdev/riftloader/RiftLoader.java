@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipException;
@@ -64,32 +65,8 @@ public class RiftLoader {
         // Load classpath mods
         log.info("Searching mods on classpath");
         try {
-            Enumeration<URL> urls = ClassLoader.getSystemResources("riftmod.json");
-            while (urls.hasMoreElements()) {
-                URL url = urls.nextElement();
-                InputStream in = url.openStream();
-
-                // Convert jar utls to file urls (from JarUrlConnection.parseSpecs)
-                switch (url.getProtocol()) {
-                    case "jar":
-                        String spec = url.getFile();
-
-                        int separator = spec.indexOf("!/");
-                        if (separator == -1) {
-                            throw new MalformedURLException("no !/ found in url spec:" + spec);
-                        }
-
-                        url = new URL(spec.substring(0, separator));
-
-                        loadModFromJson(in, new File(url.toURI()));
-                        break;
-                    case "file":
-                        loadModFromJson(in, new File(url.toURI()).getParentFile());
-                        break;
-                    default:
-                        throw new RuntimeException("Unsupported protocol: " + url);
-                }
-            }
+            searchClasspath("riftmod.json", this::loadModFromJson);
+            searchClasspath("riftmods.json", this::loadModsFromJson);
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -107,6 +84,12 @@ public class RiftLoader {
                 JarEntry entry = jar.getJarEntry("riftmod.json");
                 if (entry != null) {
                     loadModFromJson(jar.getInputStream(entry), file);
+                    continue;
+                }
+
+                entry = jar.getJarEntry("riftmods.json");
+                if (entry != null) {
+                    loadModsFromJson(jar.getInputStream(entry), file);
                     continue;
                 }
 
@@ -131,6 +114,36 @@ public class RiftLoader {
         log.info("Loaded " + modInfoMap.size() + " mods");
     }
 
+    private void searchClasspath(String name, BiConsumer<InputStream, File> loader) throws IOException, URISyntaxException {
+    	for (Enumeration<URL> urls = ClassLoader.getSystemResources(name); urls.hasMoreElements();) {
+            URL url = urls.nextElement();
+            InputStream in = url.openStream();
+
+            // Convert jar utls to file urls (from JarUrlConnection.parseSpecs)
+            switch (url.getProtocol()) {
+                case "jar":
+                    String spec = url.getFile();
+
+                    int separator = spec.indexOf("!/");
+                    if (separator == -1) {
+                        throw new MalformedURLException("no !/ found in url spec: " + spec);
+                    }
+
+                    url = new URL(spec.substring(0, separator));
+
+                    loader.accept(in, new File(url.toURI()));
+                    break;
+                case "file":
+                	loader.accept(in, new File(url.toURI()).getParentFile());
+                    break;
+                default:
+                    throw new RuntimeException("Unsupported protocol: " + url);
+            }
+
+            //in.close();
+        }
+    }
+
     private void loadModFromJson(InputStream in, File source) {
         try {
             // Parse the 'riftmod.json' and make a ModInfo
@@ -148,6 +161,34 @@ public class RiftLoader {
             // Add the mod to the 'id -> mod info' map
             modInfoMap.put(modInfo.id, modInfo);
             log.info("Loaded mod '" + modInfo.id + "'");
+        } catch (JsonParseException e) {
+            throw new RuntimeException("Could not read riftmod.json in " + source, e);
+        }
+    }
+
+    private void loadModsFromJson(InputStream in, File source) {
+        try {
+        	/** Avoid spamming repeat warnings if more than one mod misses the ID */
+        	boolean missingID = false;
+
+            // Parse the 'riftmods.json' and make the ModInfos
+            for (ModInfo modInfo : ModInfo.GSON.fromJson(new InputStreamReader(in), ModInfo[].class)) {
+	            modInfo.source = source;
+	
+	            // Make sure the id isn't null and there aren't any duplicates
+	            if (modInfo.id == null) {
+	                missingID = true;
+	                continue;
+	            } else if (modInfoMap.containsKey(modInfo.id)) {
+	                throw new DuplicateModException(modInfo, modInfoMap.get(modInfo.id));
+	            }
+	
+	            // Add the mod to the 'id -> mod info' map
+	            modInfoMap.put(modInfo.id, modInfo);
+	            log.info("Loaded mod '" + modInfo.id + '\'');
+            }
+
+            if (missingID) log.error("Mod file " + source + "'s riftmods.json is missing a 'id' field");
         } catch (JsonParseException e) {
             throw new RuntimeException("Could not read riftmod.json in " + source, e);
         }
