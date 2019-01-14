@@ -117,11 +117,13 @@ public class Main {
             Files.copy(Main.class.getResourceAsStream("/profile.json"), versionJson.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
             File fakeJar = new File(minecraftFolder, "versions/1.13.2-rift-@VERSION@/1.13.2-rift-@VERSION@.jar");
-            File maybeRealJar = new File(minecraftFolder, "versions/1.13.2/1.13.2.jar");
-            if (maybeRealJar.exists()) {
-            	Files.copy(maybeRealJar.toPath(), fakeJar.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } else {
-            	fakeJar.createNewFile();
+            if (!fakeJar.exists()) {
+            	File maybeRealJar = new File(minecraftFolder, "versions/1.13.2/1.13.2.jar");
+            	if (maybeRealJar.exists()) {
+            		Files.copy(maybeRealJar.toPath(), fakeJar.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } else {
+                	fakeJar.createNewFile();
+                }
             }
 
             // Make mods directory
