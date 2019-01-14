@@ -8,7 +8,7 @@ buildscript {
         maven { url 'https://plugins.gradle.org/m2/' }
     }
     dependencies {
-        classpath "com.github.Chocohead:ForgeGradle:moderniser-SNAPSHOT"
+        classpath "com.github.Chocohead:ForgeGradle:jitpack-SNAPSHOT"
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
         classpath 'gradle.plugin.com.github.breadmoirai:github-release:2.0.1'
     }
@@ -36,7 +36,7 @@ repositories {
 	maven { url = "https://files.minecraftforge.net/maven" }
     maven { url 'https://www.dimdev.org/maven/' }
     maven { url = 'https://repo.spongepowered.org/maven/' }
-	maven { url 'http://repo.strezz.org/artifactory/list/Strezz-Central' }
+	maven { url 'https://www.jitpack.io' }
 }
 
 dependencies {
