@@ -1,5 +1,5 @@
 package net.optifine;
 
-public class CustomColors {
+class CustomColors {
 
 }
