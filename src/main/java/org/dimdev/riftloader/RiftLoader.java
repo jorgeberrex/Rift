@@ -115,10 +115,11 @@ public class RiftLoader {
                     ModInfo mod = new ModInfo();
                     mod.source = file;
                     mod.id = "optifine";
-                    mod.name = "Optifine";
+                    mod.name = "OptiFine";
                     mod.authors.add("sp614x");
                     mod.listeners.add(new ModInfo.Listener("org.dimdev.riftloader.OptifineLoader"));
                     modInfoMap.put("optifine", mod);
+                    log.info("Loaded mod 'optifine'");
                 }
 
                 log.debug("Skipping " + file + " since it does not contain riftmod.json");
