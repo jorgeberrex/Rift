@@ -9,6 +9,7 @@
 		"MixinVanillaPack"
 	],
 	"client": [
-		"client.MixinBlockFluidRenderer"
+		"client.MixinBlockFluidRenderer",
+		"client.MixinCustomColors"
 	]
 }
