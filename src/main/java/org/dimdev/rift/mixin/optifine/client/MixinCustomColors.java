@@ -12,9 +12,9 @@ import net.minecraft.fluid.IFluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 
-@Mixin(targets = "net/optifine/CustomColors", remap = false)
+@Mixin(targets = "net/optifine/CustomColors")
 public class MixinCustomColors {
-	@Inject(at = @At("RETURN"), method = "getFluidColor(Lnet/minecraft/world/IWorldReader;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/optifine/render/RenderEnv;)I", cancellable = true, remap = true, constraints = "OPTIFINE(1+)")
+	@Inject(at = @At("RETURN"), method = "getFluidColor(Lnet/minecraft/world/IWorldReader;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/optifine/render/RenderEnv;)I", cancellable = true, constraints = "OPTIFINE(1+)")
 	private static void fixFluidColours(IWorldReader world, IBlockState state, BlockPos pos, @Coerce Object renderEnv, CallbackInfoReturnable<Integer> callback) {
 		IFluidState fluidState = world.getFluidState(pos);
 

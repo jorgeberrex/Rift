@@ -60,11 +60,15 @@ minecraft {
 mixin {
     defaultObfuscationEnv notch
     add sourceSets.main, 'mixins.rift.refmap.json'
+    extraSrgFile notch, "$projectDir/optimap.srg"
     token("OPTIFINE", 1)
 }
 
 sourceSets {
-    main
+	shim
+    main {
+    	compileClasspath += shim.output
+    }
     debug {
         compileClasspath += main.compileClasspath
     }
