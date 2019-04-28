@@ -11,7 +11,70 @@ If you have any problems or find any incompatibilities using this please do repo
 The current version can be downloaded from [**here**](https://jitpack.io/com/github/Chocohead/Rift/jitpack-SNAPSHOT/Rift-jitpack-SNAPSHOT.jar) and installed just like the previous versions of Rift. Mods designed for 1.13 currently aren't supported but might be in future.
 
 ### Using MultiMC
-*TODO*
+Modified original documentation from the [Rift Wiki](https://github.com/DimensionalDevelopment/Rift/wiki/Installing-Rift-in-a-MultiMC-instance#alternate-method)
+
+1. Make a new instance in MultiMC with with the wanted version of Minecraft—in our case, Minecraft 1.13.2
+1. Click `Edit Instance`—it should open the `Version` page of the instance.
+1. Click `Add Empty`.
+1. Set uid to `org.dimdev.rift` and name to `Rift`.
+1. Select the newly created component and click `Edit`—this should open the file in a text editor.
+1. Edit the JSON to look like the example below, then save the file.
+1. Launch the instance from MultiMC.
+
+The version that I selected for the example is the one provided alongside VoxelMap [here](https://minecraft.curseforge.com/projects/voxelmap)
+
+If the example doesn't fit the Rift version exactly, change the version. For example, replace all occurrences of `2d8bb9bd56` with `d6893ec777`.
+
+You can use the version page to check the file for errors—obvious mistakes will show up in the `Version` page as soon as you click the `Refresh` button.
+
+If the JSON file doesn't open in a text editor, make sure your operating system is set up to open `.json` files in one first.
+
+#### Example MultiMC Json
+
+```json
+{
+    "+tweakers": [
+        "org.dimdev.riftloader.launch.RiftLoaderClientTweaker"
+    ],
+    "formatVersion": 1,
+    "+libraries": [
+        {
+            "name": "com.github.Chocohead:rift:2d8bb9bd56",
+            "url": "https://jitpack.io/"
+        },
+        {
+            "name": "org.dimdev:mixin:0.7.11-SNAPSHOT",
+            "url": "https://www.dimdev.org/maven/"
+        },
+        {
+            "name": "org.ow2.asm:asm:6.2",
+            "url": "http://repo1.maven.org/maven2/"
+        },
+        {
+            "name": "org.ow2.asm:asm-commons:6.2",
+            "url": "http://repo1.maven.org/maven2/"
+        },
+        {
+            "name": "org.ow2.asm:asm-tree:6.2",
+            "url": "http://repo1.maven.org/maven2/"
+        },
+        {
+            "name": "net.minecraft:launchwrapper:1.12"
+        }
+    ],
+    "mainClass": "net.minecraft.launchwrapper.Launch",
+    "name": "Rift",
+    "releaseTime": "2018-07-18T15:11:46+00:00",
+    "requires": [
+        {
+            "equals": "1.13.2",
+            "uid": "net.minecraft"
+        }
+    ],
+    "uid": "org.dimdev.rift",
+    "version": "1.0.4-2d8bb9bd56"
+}
+```
 
 ## Modding on Minecraft 1.13.2
 The fork of Forge Gradle 2 used for 1.13 has been improved for 1.13.2 so `setupDecompWorkspace` is now supported and is strongly encouraged to be used. Access transformers which would have otherwise silently failed will now explicitly crash so they can be fixed, which is helpful for updating. The locations of all found transformers can be found by running `setupDecompWorkspace`/`setupDevWorkspace` with `--info` and looking immediately after where the access transformer task is applied. Further improvements can be suggested [**here**](https://github.com/Chocohead/ForgeGradle/issues).
