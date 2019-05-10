@@ -76,7 +76,11 @@ sourceSets {
 
 processResources {
     filesMatching('profile.json') {
-        expand 'version': project.version
+		def process = 'git rev-parse --short HEAD'.execute()
+		process.waitFor()
+		def things = ['version': project.version, 'build': !process.exitValue() ? 'SNAPSHOT' : "${process.text.trim()}"]
+
+        expand things
     }
 
     // Re-run this task when these change
