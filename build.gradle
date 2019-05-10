@@ -78,7 +78,7 @@ processResources {
     filesMatching('profile.json') {
 		def process = 'git rev-parse --short HEAD'.execute()
 		process.waitFor()
-		def things = ['version': project.version, 'build': !process.exitValue() ? 'SNAPSHOT' : "${process.text.trim()}"]
+		def things = ['version': project.version, 'build': !process.exitValue() ? 'jitpack-SNAPSHOT' : "${process.text.trim()}"]
 
         expand things
     }
